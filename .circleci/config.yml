@@ -7,12 +7,15 @@ workflows:
       - build:
           filters:
             branches:
-              only: -main
+              only:
+                - main
       - deploy:
           filters:
             branches:
-              only: -main
-          requires: -build
+              only:
+                - main
+          requires:
+            - build
 
 jobs:
   build:
@@ -29,6 +32,9 @@ jobs:
       - run:
           name: install-npm
           command: npm install
+      - run:
+          name: test-run
+          command: npm run test
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
@@ -39,4 +45,4 @@ jobs:
     steps:
       - run:
           name: deploy-application
-          command: ssh -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "rm -rf SimpleApplication/;git clone https://github.com/victorosetrov/SimpleApplication.git; source SimpleApplication/deploy.sh"
+          command: ssh  -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_PUBLIC_DNS "rm -rf SimpleApplication/;git clone https://github.com/victorosetrov/SimpleApplication.git; source SimpleApplication/deploy.sh"
